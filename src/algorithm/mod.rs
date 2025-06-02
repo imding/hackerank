@@ -4,6 +4,7 @@ pub mod game_of_thrones_i;
 pub mod highest_value_palindrome;
 pub mod making_anagram;
 pub mod palindrome_index;
+pub mod acm_icpc_team;
 pub mod queens_attack_ii;
 pub mod sherlock_and_the_valid_string;
 pub mod string_construction;
