@@ -1,59 +1,281 @@
+//! # DNA Health Problem - Aho-Corasick Implementation
+//!
+//! This module solves the DNA Health problem using the Aho-Corasick algorithm for efficient
+//! multi-pattern string matching. The problem involves finding the minimum and maximum health
+//! values across multiple DNA strands, where health is calculated by summing the health values
+//! of all gene patterns that appear as substrings in each DNA strand.
+//!
+//! ## Problem Description
+//!
+//! Given:
+//! - An array of gene sequences (patterns)
+//! - Corresponding health values for each gene
+//! - Multiple DNA strands with specified gene ranges
+//!
+//! For each DNA strand, we need to:
+//! 1. Find all occurrences of genes within the specified range
+//! 2. Sum their health values
+//! 3. Track the minimum and maximum health values across all strands
+//!
+//! ## Algorithm Choice: Aho-Corasick
+//!
+//! The naive approach would check each position in the DNA strand against all valid genes,
+//! resulting in O(n × m × k) time complexity where:
+//! - n = length of DNA strand
+//! - m = number of genes
+//! - k = average gene length
+//!
+//! Aho-Corasick algorithm provides O(n + m × k + z) time complexity where:
+//! - n = length of DNA strand
+//! - m × k = total length of all patterns (preprocessing)
+//! - z = number of pattern occurrences
+//!
+//! ## Performance Benefits
+//!
+//! For large inputs with many patterns and long text, Aho-Corasick significantly outperforms
+//! the naive approach. The preprocessing overhead is amortized across multiple searches, and
+//! the algorithm can find all pattern occurrences in a single pass through the text.
+//!
+//! ## Implementation Details
+//!
+//! The implementation consists of:
+//! 1. **TrieNode**: Represents states in the finite automaton
+//! 2. **AhoCorasick**: Main structure containing the trie and search logic
+//! 3. **Failure Links**: Enable efficient backtracking on mismatches
+//! 4. **Output Links**: Store pattern information at terminal states
+//!
+//! The automaton is built once and reused for all DNA strand searches, making it highly
+//! efficient for the DNA health problem where multiple strands need to be processed.
+
 use std::{
     cmp::{max, min},
-    collections::HashMap,
+    collections::{HashMap, VecDeque},
 };
 
-fn dna_health(genes: Vec<String>, health: Vec<i32>, strands: Vec<(i32, i32, String)>) -> String {
-    let gene_health = genes
-        .into_iter()
-        .zip(health.into_iter())
-        .collect::<Vec<_>>();
-    let mut answer = (i32::MAX, i32::MIN);
+/// Node in the Aho-Corasick trie structure
+/// Each node represents a state in the automaton
+#[derive(Debug, Clone)]
+struct TrieNode {
+    /// Map from character to child node index
+    children: HashMap<char, usize>,
+    /// Index of the failure link node (for efficient backtracking)
+    failure: usize,
+    /// List of (gene_index, health_value) pairs that end at this node
+    output: Vec<(usize, i32)>,
+}
 
-    for (start, end, mut d) in strands {
-        let mut health = 0;
-        let healthy_genes = gene_health[start as usize..=end as usize].iter().fold(
-            HashMap::<&str, Vec<(String, i32)>>::new(),
-            |mut acc, (gene, value)| {
-                if let Some(first_char) = gene.get(0..1) {
-                    let v = (gene.clone(), *value);
-
-                    if acc.contains_key(first_char) {
-                        if let Some(values) = acc.get_mut(first_char) {
-                            values.push(v);
-                        }
-                    } else {
-                        acc.insert(first_char, vec![v]);
-                    }
-                }
-
-                acc
-            },
-        );
-
-        while d.len() > 0 {
-            if let Some(first_char) = d.get(0..1) {
-                if let Some(values) = healthy_genes.get(first_char) {
-                    for (gene, value) in values {
-                        if d.starts_with(gene) {
-                            health += value;
-                        }
-                    }
-                }
-            }
-
-            d = d[1..d.len()].to_string();
+impl TrieNode {
+    fn new() -> Self {
+        TrieNode {
+            children: HashMap::new(),
+            failure: 0,
+            output: Vec::new(),
         }
+    }
+}
 
-        answer.0 = min(answer.0, health);
-        answer.1 = max(answer.1, health);
+/// Aho-Corasick automaton for efficient multi-pattern string matching
+/// This implementation allows finding all occurrences of multiple patterns
+/// in a text in O(n + m + z) time where n is text length, m is total pattern length,
+/// and z is the number of matches
+struct AhoCorasick {
+    /// Vector of trie nodes representing the automaton states
+    trie: Vec<TrieNode>,
+}
+
+impl AhoCorasick {
+    fn new() -> Self {
+        AhoCorasick {
+            trie: vec![TrieNode::new()],
+        }
     }
 
-    let text = format!("{} {}", answer.0, answer.1);
+    /// Add a pattern (gene) to the trie with its associated metadata
+    /// 
+    /// # Arguments
+    /// * `pattern` - The gene sequence to add
+    /// * `gene_index` - Index of the gene in the original array
+    /// * `health_value` - Health value associated with this gene
+    fn add_pattern(&mut self, pattern: &str, gene_index: usize, health_value: i32) {
+        let mut current = 0;
+        
+        for ch in pattern.chars() {
+            if let Some(&next) = self.trie[current].children.get(&ch) {
+                current = next;
+            } else {
+                let new_node = self.trie.len();
+                self.trie.push(TrieNode::new());
+                self.trie[current].children.insert(ch, new_node);
+                current = new_node;
+            }
+        }
+        
+        self.trie[current].output.push((gene_index, health_value));
+    }
 
-    println!("{}", text);
+    /// Build failure links for the Aho-Corasick automaton
+    /// This enables efficient backtracking when a mismatch occurs
+    /// Uses BFS to ensure failure links are built in correct order
+    fn build_failure_links(&mut self) {
+        let mut queue = VecDeque::new();
+        
+        // Initialize failure links for nodes at depth 1
+        let root_children: Vec<usize> = self.trie[0].children.values().copied().collect();
+        for child in root_children {
+            self.trie[child].failure = 0;
+            queue.push_back(child);
+        }
+        
+        while let Some(current) = queue.pop_front() {
+            let children: Vec<(char, usize)> = self.trie[current].children.iter().map(|(&ch, &child)| (ch, child)).collect();
+            
+            for (ch, child) in children {
+                queue.push_back(child);
+                
+                let mut failure = self.trie[current].failure;
+                
+                while failure != 0 && !self.trie[failure].children.contains_key(&ch) {
+                    failure = self.trie[failure].failure;
+                }
+                
+                if self.trie[failure].children.contains_key(&ch) && self.trie[failure].children[&ch] != child {
+                    failure = self.trie[failure].children[&ch];
+                }
+                
+                self.trie[child].failure = failure;
+                
+                // Add output from failure node
+                let failure_output = self.trie[failure].output.clone();
+                self.trie[child].output.extend(failure_output);
+            }
+        }
+    }
 
-    text
+    /// Search for all patterns in the given text and calculate total health
+    /// Only considers genes within the specified range [start_gene, end_gene]
+    /// 
+    /// # Arguments
+    /// * `text` - The DNA strand to search in
+    /// * `start_gene` - Starting gene index (inclusive)
+    /// * `end_gene` - Ending gene index (inclusive)
+    /// 
+    /// # Returns
+    /// Total health value of all matching genes in the specified range
+    fn search(&self, text: &str, start_gene: usize, end_gene: usize) -> i32 {
+        let mut current = 0;
+        let mut total_health = 0;
+        
+        for ch in text.chars() {
+            while current != 0 && !self.trie[current].children.contains_key(&ch) {
+                current = self.trie[current].failure;
+            }
+            
+            if let Some(&next) = self.trie[current].children.get(&ch) {
+                current = next;
+            }
+            
+            // Process all matches at current position
+            for &(gene_index, health_value) in &self.trie[current].output {
+                if gene_index >= start_gene && gene_index <= end_gene {
+                    total_health += health_value;
+                }
+            }
+        }
+        
+        total_health
+    }
+}
+
+/// Calculate the minimum and maximum health values across all DNA strands
+/// Uses Aho-Corasick algorithm for efficient multi-pattern matching
+/// 
+/// This is the main entry point for solving the DNA Health problem. It builds an Aho-Corasick
+/// automaton from all gene patterns, then efficiently searches each DNA strand to calculate
+/// health values.
+/// 
+/// # Arguments
+/// * `genes` - Vector of gene sequences (patterns to search for)
+/// * `health` - Vector of health values corresponding to each gene
+/// * `strands` - Vector of (start_index, end_index, dna_sequence) tuples where:
+///   - start_index: inclusive start of gene range to consider
+///   - end_index: inclusive end of gene range to consider
+///   - dna_sequence: the DNA strand to search in
+/// 
+/// # Returns
+/// String containing "min_health max_health" where:
+/// - min_health: minimum health value found across all strands
+/// - max_health: maximum health value found across all strands
+/// 
+/// # Time Complexity
+/// - Preprocessing: O(m × k) where m = number of genes, k = average gene length
+/// - Search: O(n + z) per strand where n = strand length, z = number of matches
+/// - Total: O(m × k + s × (n + z)) where s = number of strands
+/// 
+/// # Example
+/// ```
+/// let genes = vec!["a".to_string(), "aa".to_string()];
+/// let health = vec![1, 2];
+/// let strands = vec![(0, 1, "aaa".to_string())];
+/// let result = dna_health(genes, health, strands);
+/// // Result: "5 5" (three 'a' matches + two 'aa' matches = 3×1 + 2×2 = 7)
+/// ```
+fn dna_health(genes: Vec<String>, health: Vec<i32>, strands: Vec<(i32, i32, String)>) -> String {
+    let mut aho_corasick = AhoCorasick::new();
+    
+    // Build the trie with all genes
+    for (i, gene) in genes.iter().enumerate() {
+        aho_corasick.add_pattern(gene, i, health[i]);
+    }
+    
+    // Build failure links
+    aho_corasick.build_failure_links();
+    
+    let mut min_health = i32::MAX;
+    let mut max_health = i32::MIN;
+    
+    // Process each DNA strand
+    for (start, end, dna) in strands {
+        let strand_health = aho_corasick.search(&dna, start as usize, end as usize);
+        min_health = min(min_health, strand_health);
+        max_health = max(max_health, strand_health);
+    }
+    
+    let result = format!("{} {}", min_health, max_health);
+    println!("{}", result);
+    result
+}
+
+/// Naive implementation for performance comparison
+/// This implementation checks each position in the DNA strand against all genes
+/// Time complexity: O(n * m * k) where n = text length, m = number of genes, k = average gene length
+fn dna_health_naive(genes: Vec<String>, health: Vec<i32>, strands: Vec<(i32, i32, String)>) -> String {
+    let mut min_health = i32::MAX;
+    let mut max_health = i32::MIN;
+
+    for (start, end, dna) in strands {
+        let mut strand_health = 0;
+        let valid_genes: Vec<_> = genes[start as usize..=end as usize]
+            .iter()
+            .zip(health[start as usize..=end as usize].iter())
+            .collect();
+
+        // For each position in the DNA strand
+        for i in 0..dna.len() {
+            let remaining = &dna[i..];
+            
+            // Check all valid genes
+            for (gene, gene_health) in &valid_genes {
+                if remaining.starts_with(*gene) {
+                    strand_health += *gene_health;
+                }
+            }
+        }
+
+        min_health = min(min_health, strand_health);
+        max_health = max(max_health, strand_health);
+    }
+
+    format!("{} {}", min_health, max_health)
 }
 
 #[cfg(test)]
@@ -284,5 +506,117 @@ mod tests {
         );
 
         assert_eq!(result, "3218660 11137051");
+    }
+
+    #[test]
+    fn test_dna_health_simple() {
+        let result = dna_health(
+            vec!["a".to_string(), "aa".to_string(), "aaa".to_string()],
+            vec![1, 2, 3],
+            vec![(0, 2, "aaaa".to_string())],
+        );
+        // "aaaa" contains: "a" (4 times), "aa" (3 times), "aaa" (2 times)
+        // Total: 4*1 + 3*2 + 2*3 = 4 + 6 + 6 = 16
+        assert_eq!(result, "16 16");
+    }
+
+    #[test]
+    fn test_dna_health_no_matches() {
+        let result = dna_health(
+            vec!["abc".to_string(), "def".to_string()],
+            vec![10, 20],
+            vec![(0, 1, "xyz".to_string())],
+        );
+        assert_eq!(result, "0 0");
+    }
+
+    #[test]
+    fn test_dna_health_range_filter() {
+        let result = dna_health(
+            vec!["a".to_string(), "b".to_string(), "c".to_string()],
+            vec![1, 2, 3],
+            vec![
+                (0, 0, "abc".to_string()), // only gene "a" (health 1)
+                (1, 2, "abc".to_string()), // genes "b" and "c" (health 2+3=5)
+            ],
+        );
+        assert_eq!(result, "1 5");
+    }
+
+    #[test]
+    fn test_performance_comparison() {
+        use std::time::Instant;
+
+        // Create a larger test case with many genes and longer DNA strands
+        let mut genes = Vec::new();
+        let mut health = Vec::new();
+        
+        // Generate 50 genes of varying lengths
+        for i in 0..50 {
+            let gene = format!("gene{:02}", i);
+            genes.push(gene);
+            health.push((i + 1) * 10);
+        }
+        
+        // Add some shorter common patterns
+        for pattern in ["at", "gc", "ta", "cg", "atg", "gcg", "tag", "cat"] {
+            genes.push(pattern.to_string());
+            health.push(100);
+        }
+        
+        // Create long DNA strands with repeating patterns
+        let long_dna = "atgcatgcgctagcatgcatgcgctagcatgcatgcgctag".repeat(1000);
+        let complex_dna = "gene01gene02gene03atgcgene04gene05tagcatgene06".repeat(500);
+        
+        let strands = vec![
+            (0, genes.len() as i32 - 1, long_dna),
+            (10, 40, complex_dna),
+            (0, 20, "atgctagcatgctagc".repeat(2000)),
+        ];
+
+        // Test Aho-Corasick implementation
+        let start = Instant::now();
+        let result_ac = dna_health(genes.clone(), health.clone(), strands.clone());
+        let duration_ac = start.elapsed();
+
+        // Test naive implementation
+        let start = Instant::now();
+        let result_naive = dna_health_naive(genes, health, strands);
+        let duration_naive = start.elapsed();
+
+        // Results should be identical
+        assert_eq!(result_ac, result_naive);
+
+        println!("Aho-Corasick: {:?}", duration_ac);
+        println!("Naive approach: {:?}", duration_naive);
+        
+        if duration_ac.as_nanos() > 0 {
+            println!("Performance improvement: {:.2}x", 
+                     duration_naive.as_nanos() as f64 / duration_ac.as_nanos() as f64);
+        }
+
+        // For large inputs, Aho-Corasick should significantly outperform naive approach
+        // The advantage becomes more pronounced with more patterns and longer text
+    }
+
+    #[test]
+    fn test_correctness_comparison() {
+        // Test with the original large test case to ensure both implementations produce same result
+        let genes = vec![
+            "a".to_string(), "b".to_string(), "c".to_string(),
+            "aa".to_string(), "bb".to_string(), "cc".to_string(),
+        ];
+        let health = vec![1, 2, 3, 10, 20, 30];
+        let strands = vec![
+            (0, 5, "abcabc".to_string()),
+            (1, 3, "aabbcc".to_string()),
+            (0, 2, "aaabbbccc".to_string()),
+        ];
+
+        let result_ac = dna_health(genes.clone(), health.clone(), strands.clone());
+        let result_naive = dna_health_naive(genes, health, strands);
+
+        assert_eq!(result_ac, result_naive, 
+                   "Aho-Corasick and naive implementations should produce identical results");
     }
 }
