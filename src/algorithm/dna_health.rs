@@ -253,36 +253,40 @@ fn dna_health(genes: Vec<String>, health: Vec<i64>, strands: Vec<(i32, i32, Stri
 /// Parse input from file and run DNA health analysis
 /// Input format:
 /// - Line 1: number of genes (n)
-/// - Line 2: space-separated gene sequences 
+/// - Line 2: space-separated gene sequences
 /// - Line 3: space-separated health values
 /// - Line 4: number of test cases (s)
 /// - Lines 5 to 4+s: each line contains "start end dna_string"
 pub fn parse_and_run_dna_health(file_path: &str) -> std::io::Result<String> {
     use std::fs;
-    
+
     let content = fs::read_to_string(file_path)?;
     let mut lines = content.lines();
-    
+
     // Parse number of genes
     let n: usize = lines.next().unwrap().parse().unwrap();
-    
+
     // Parse genes
-    let genes: Vec<String> = lines.next().unwrap()
+    let genes: Vec<String> = lines
+        .next()
+        .unwrap()
         .split_whitespace()
         .take(n)
         .map(|s| s.to_string())
         .collect();
-    
+
     // Parse health values
-    let health: Vec<i64> = lines.next().unwrap()
+    let health: Vec<i64> = lines
+        .next()
+        .unwrap()
         .split_whitespace()
         .take(n)
         .map(|s| s.parse().unwrap())
         .collect();
-    
+
     // Parse number of test cases
     let s: usize = lines.next().unwrap().parse().unwrap();
-    
+
     // Parse test cases
     let mut strands = Vec::new();
     for _ in 0..s {
@@ -293,7 +297,7 @@ pub fn parse_and_run_dna_health(file_path: &str) -> std::io::Result<String> {
         let dna = parts[2].to_string();
         strands.push((start, end, dna));
     }
-    
+
     // Run the analysis
     let result = dna_health(genes, health, strands);
     Ok(result)
