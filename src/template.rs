@@ -13,4 +13,16 @@ mod test {
         let result = solution("a", "b");
         assert_eq!(result, "OK");
     }
+
+    #[test]
+    fn test_solution_02() {
+        let result = solution("a", "b");
+        assert_eq!(result, "OK");
+    }
+
+    #[test]
+    fn test_solution_03() {
+        let result = solution("a", "b");
+        assert_eq!(result, "OK");
+    }
 }

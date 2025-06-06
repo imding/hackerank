@@ -1,10 +1,10 @@
-fn string_construction(s1: &str) -> i32 {
+fn string_construction(s: &str) -> i32 {
     let mut cost = 0;
     let mut free = vec![false; 26];
 
     let alphabet = "abcdefghijklmnopqrstuvwxyz".chars();
 
-    for char in s1.chars() {
+    for char in s.chars() {
         let index = match alphabet.clone().position(|letter| letter == char) {
             Some(index) => index,
             _ => panic!("Expect letter index to be valid."),
