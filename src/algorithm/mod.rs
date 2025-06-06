@@ -4,5 +4,6 @@ pub mod game_of_thrones_i;
 pub mod making_anagram;
 pub mod palindrome_index;
 pub mod queens_attack_ii;
+pub mod sherlock_and_the_valid_string;
 pub mod string_construction;
 pub mod two_strings;
