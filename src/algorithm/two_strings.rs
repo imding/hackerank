@@ -24,7 +24,7 @@ fn two_strings(s1: &str, s2: &str) -> String {
     );
 
     for index in 0..alphabet.count() {
-        if chunk_l[index].len() > 0 && chunk_r[index].len() > 0 {
+        if !chunk_l[index].is_empty() && !chunk_r[index].is_empty() {
             answer = "YES";
 
             break;

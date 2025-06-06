@@ -1,133 +1,70 @@
-use std::{
-    cmp::{max, min},
-    fs,
-    io::Result,
-};
+use std::{fs, io::Result};
 
 fn highest_value_palindrome(s: &str, n: i32, k: i32) -> String {
-    let half = n as f32 / 2.0;
-    let half_u = half.floor() as usize;
-    let chars = s.chars().collect::<Vec<_>>();
+    let n = n as usize;
+    let mut k = k;
 
-    let mut k_ = min(k, n * 2);
-    let mut left = chars[0..half_u].to_vec();
-    let mut right = chars[half.ceil() as usize..n as usize].to_vec();
-    let mut mid = match n % 2 > 0 {
-        true => Some(chars[half_u]),
-        false => None,
-    };
-    let mut round_2 = Vec::new();
-    let mut lines = Vec::new();
+    // Convert to mutable array of digits for efficient manipulation
+    let mut digits: Vec<u8> = s.chars().map(|c| c.to_digit(10).unwrap() as u8).collect();
 
-    println!("---");
-    println!("{:?} {:?}", left, right);
+    // Track positions that need changes to become palindrome
+    let mut mismatch_positions = Vec::new();
 
-    for index_l in 0..half_u {
-        let index_r = half_u - 1 - index_l;
-        let digit_l = match left[index_l].to_string().parse::<usize>() {
-            Ok(digit) => digit,
-            _ => panic!("Expect left char to be digit."),
-        };
-        let digit_r = match right[index_r].to_string().parse::<usize>() {
-            Ok(digit) => digit,
-            _ => panic!("Expect right char to be digit."),
-        };
-        let mut line = format!("{} {}", digit_l, digit_r);
+    // Phase 1: Identify mismatches and calculate minimum changes needed
+    let half = n / 2;
+    for i in 0..half {
+        let left = i;
+        let right = n - 1 - i;
 
-        if digit_l == digit_r {
-            if digit_l < 9 {
-                round_2.push((index_l, index_r, 2));
-                line = format!("{} | round 2: {} {}", line, index_l, index_r);
-            }
-        } else {
-            k_ -= 1;
+        if digits[left] != digits[right] {
+            mismatch_positions.push(i);
 
-            if k_ >= 0 {
-                let bigger_u = max(digit_l, digit_r) as u32;
-                let bigger = match char::from_digit(bigger_u, 10) {
-                    Some(c) => c,
-                    _ => panic!("Expect bigger digit to convert to char."),
-                };
+            // Make palindrome by choosing the larger digit
+            let max_digit = digits[left].max(digits[right]);
+            digits[left] = max_digit;
+            digits[right] = max_digit;
+            k -= 1;
+        }
+    }
 
-                left[index_l] = bigger;
-                right[index_r] = bigger;
+    // If we don't have enough operations to fix basic mismatches, return -1
+    if k < 0 {
+        return "-1".to_string();
+    }
 
-                line = format!("{} -> {}", line, bigger_u);
+    // Phase 2: Maximize value with remaining operations
+    for i in 0..half {
+        let left = i;
+        let right = n - 1 - i;
 
-                if bigger_u < 9 {
-                    round_2.push((index_l, index_r, 1));
-                    line = format!("{} | round 2: {} {}", line, index_l, index_r);
-                }
+        if digits[left] < 9 {
+            let cost = if mismatch_positions.contains(&i) {
+                // This position was already changed once, so only 1 more operation needed
+                1
             } else {
-                break;
+                // This position needs 2 operations (both sides)
+                2
+            };
+
+            if k >= cost {
+                digits[left] = 9;
+                digits[right] = 9;
+                k -= cost;
             }
         }
-
-        lines.push(format!("{: <32}", line));
-
-        if lines.len() == 15 {
-            println!("{}", lines.join(""));
-            lines.clear();
-        }
     }
 
-    for (index_l, index_r, cost) in &round_2 {
-        if k_ >= *cost as i32 {
-            left[*index_l] = '9';
-            right[*index_r] = '9';
-            k_ -= cost;
-        } else {
-            break;
-        }
+    // Handle middle digit for odd-length strings
+    if n % 2 == 1 && k > 0 {
+        let mid = n / 2;
+        digits[mid] = 9;
     }
 
-    if k_ >= 0 {
-        let (mut index_l, mut index_r, _) = match round_2.last() {
-            Some(replacement) => replacement.to_owned(),
-            _ => (0, half_u - 1, 2),
-        };
-
-        println!("init: {}, {}, {}", index_l, index_r, k_);
-
-        while k_ > 0 {
-            if k_ > 1 {
-                if index_l < left.len() - 1 && index_r > 0 {
-                    index_l += 1;
-                    index_r -= 1;
-
-                    println!("reduced: {}, {}", index_l, index_r);
-
-                    if left[index_l] != '9' && right[index_r] != '9' {
-                        left[index_l] = '9';
-                        right[index_r] = '9';
-
-                        k_ -= 2;
-                    }
-                }
-            } else if mid.is_some() {
-                mid = Some('9');
-                k_ -= 1;
-            } else {
-                break;
-            }
-        }
-
-        println!("palindrom: {:?} {:?}", &left, &right);
-
-        return [
-            left,
-            match mid {
-                Some(c) => vec![c],
-                _ => Vec::new(),
-            },
-            right,
-        ]
-        .into_iter()
-        .flatten()
-        .collect::<String>();
-    }
-
-    "-1".to_string()
+    // Convert back to string
+    digits
+        .iter()
+        .map(|&d| char::from_digit(d as u32, 10).unwrap())
+        .collect()
 }
 
 fn parse_and_run(file_path: &str) -> Result<String> {

@@ -5,8 +5,8 @@ fn making_anagrams(s1: &str, s2: &str) -> i32 {
         return answer;
     }
 
-    let s1 = s1.chars().into_iter().collect::<Vec<_>>();
-    let s2 = s2.chars().into_iter().collect::<Vec<_>>();
+    let s1 = s1.chars().collect::<Vec<_>>();
+    let s2 = s2.chars().collect::<Vec<_>>();
 
     let alphabet = "abcdefghijklmnopqrstuvwxyz".chars();
     let (chunk_l, chunk_r) = alphabet.clone().fold(

@@ -1,6 +1,6 @@
 fn string_construction(s: &str) -> i32 {
     let mut cost = 0;
-    let mut free = vec![false; 26];
+    let mut free = [false; 26];
 
     let alphabet = "abcdefghijklmnopqrstuvwxyz".chars();
 

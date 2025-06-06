@@ -5,7 +5,7 @@ fn palindrome_index(s: &str) -> i32 {
     let left = left.chars().collect::<Vec<_>>();
     let right = right.chars().collect::<Vec<_>>();
 
-    let mut cursor_l = 0 as i32;
+    let mut cursor_l = 0;
     let mut cursor_r = right_len as i32 - 1;
     let mut miss_l = 0;
     let mut miss_r = 0;
@@ -53,7 +53,7 @@ fn palindrome_index(s: &str) -> i32 {
 
                 if right_char != left_char {
                     if miss_r < 1 {
-                        answer_r = cursor_r as i32;
+                        answer_r = cursor_r;
                     }
 
                     miss_r += 1;

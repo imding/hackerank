@@ -7,8 +7,8 @@ fn anagram(s: &str) -> i32 {
 
     let half = s.len() / 2;
     let (left, right) = s.split_at(half);
-    let mut left = left.chars().into_iter().collect::<Vec<_>>();
-    let mut right = right.chars().into_iter().collect::<Vec<_>>();
+    let mut left = left.chars().collect::<Vec<_>>();
+    let mut right = right.chars().collect::<Vec<_>>();
 
     left.sort();
     right.sort();
