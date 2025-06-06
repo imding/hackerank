@@ -4,6 +4,7 @@ pub mod dna_health;
 pub mod forming_magic_square;
 pub mod game_of_thrones_i;
 pub mod highest_value_palindrome;
+pub mod insertion_sort_analysis;
 pub mod making_anagram;
 pub mod maximum_palindromes;
 pub mod palindrome_index;
