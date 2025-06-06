@@ -1,4 +1,4 @@
-use std::{fs, io::Result};
+use std::{fs::read_to_string, io::Result};
 
 fn highest_value_palindrome(s: &str, n: i32, k: i32) -> String {
     let n = n as usize;
@@ -68,7 +68,7 @@ fn highest_value_palindrome(s: &str, n: i32, k: i32) -> String {
 }
 
 fn parse_and_run(file_path: &str) -> Result<String> {
-    let content = fs::read_to_string(file_path)?;
+    let content = read_to_string(file_path)?;
     let mut lines = content.lines();
 
     let first_multiple_input: Vec<String> = lines

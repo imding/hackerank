@@ -4,6 +4,7 @@ pub mod dna_health;
 pub mod game_of_thrones_i;
 pub mod highest_value_palindrome;
 pub mod making_anagram;
+pub mod maximum_palindromes;
 pub mod palindrome_index;
 pub mod queens_attack_ii;
 pub mod sherlock_and_the_valid_string;
