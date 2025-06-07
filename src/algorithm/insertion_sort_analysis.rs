@@ -80,7 +80,7 @@ fn parse_and_run(file_path: &str) -> Result<Vec<u64>> {
             .split(' ')
             .map(|s| s.to_string().parse::<i32>().unwrap())
             .collect::<Vec<_>>();
-        
+
         results.push(insertion_sort(&s));
     }
 

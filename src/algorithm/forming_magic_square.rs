@@ -10,22 +10,22 @@ fn forming_magic_square(s: &[Vec<i32>]) -> i32 {
         vec![vec![6, 7, 2], vec![1, 5, 9], vec![8, 3, 4]],
         vec![vec![2, 7, 6], vec![9, 5, 1], vec![4, 3, 8]],
     ];
-    
+
     let mut min_cost = i32::MAX;
-    
+
     // Try each possible magic square
     for magic_square in &magic_squares {
         let mut cost = 0;
-        
+
         // Calculate cost to transform input to this magic square
         for i in 0..3 {
             for j in 0..3 {
                 cost += (s[i][j] - magic_square[i][j]).abs();
             }
         }
-        
+
         min_cost = min_cost.min(cost);
     }
-    
+
     min_cost
 }
