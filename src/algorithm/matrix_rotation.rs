@@ -73,7 +73,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_matrix_rotation_01() {
+    fn matrix_rotation_01() {
         let result = matrix_rotation(
             &[
                 vec![1, 2, 3, 4],
@@ -95,7 +95,7 @@ mod test {
     }
 
     #[test]
-    fn test_matrix_rotation_02() {
+    fn matrix_rotation_02() {
         let result = matrix_rotation(
             &[
                 vec![1, 2, 3, 4],
@@ -119,7 +119,7 @@ mod test {
     }
 
     #[test]
-    fn test_matrix_rotation_03() {
+    fn matrix_rotation_03() {
         let result = matrix_rotation(&[vec![1, 1], vec![1, 1]], 3);
         assert_eq!(result, vec![vec![1, 1], vec![1, 1]]);
     }

@@ -30,19 +30,19 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_solution_01() {
+    fn solution_01() {
         let result = solution("a", "b");
         assert_eq!(result, "OK");
     }
 
     #[test]
-    fn test_solution_02() {
+    fn solution_02() {
         let result = solution("a", "b");
         assert_eq!(result, "OK");
     }
 
     #[test]
-    fn test_solution_03() {
+    fn solution_03() {
         let result = solution("a", "b");
         assert_eq!(result, "OK");
     }

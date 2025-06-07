@@ -2,6 +2,7 @@ pub mod acm_icpc_team;
 pub mod anagram;
 pub mod dna_health;
 pub mod forming_magic_square;
+pub mod extra_long_factorials;
 pub mod game_of_thrones_i;
 pub mod highest_value_palindrome;
 pub mod insertion_sort_analysis;

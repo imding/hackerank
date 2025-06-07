@@ -63,31 +63,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_anagram_01() {
+    fn anagram_01() {
         let result = anagram("xyyx");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_02() {
+    fn anagram_02() {
         let result = anagram("hhpddlnnsjfoyxpciioigvjqzfbpllssuj");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_03() {
+    fn anagram_03() {
         let result = anagram("xulkowreuowzxgnhmiqekxhzistdocbnyozmnqthhpievvlj");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_04() {
+    fn anagram_04() {
         let result = anagram("dnqaurlplofnrtmh");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_05() {
+    fn anagram_05() {
         let result = anagram(
             "aujteqimwfkjoqodgqaxbrkrwykpmuimqtgulojjwtukjiqrasqejbvfbixnchzsahpnyayutsgecwvcqngzoehrmeeqlgknnb",
         );
@@ -95,20 +95,20 @@ mod tests {
     }
 
     #[test]
-    fn test_anagram_06() {
+    fn anagram_06() {
         let result =
             anagram("lbafwuoawkxydlfcbjjtxpzpchzrvbtievqbpedlqbktorypcjkzzkodrpvosqzxmpad");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_07() {
+    fn anagram_07() {
         let result = anagram("drngbjuuhmwqwxrinxccsqxkpwygwcdbtriwaesjsobrntzaqbe");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_anagram_08() {
+    fn anagram_08() {
         let result = anagram("ubulzt");
         assert_eq!(result, -1);
     }

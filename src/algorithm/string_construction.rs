@@ -24,13 +24,13 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_string_construction_01() {
+    fn string_construction_01() {
         let result = string_construction("abcd");
         assert_eq!(result, 4);
     }
 
     #[test]
-    fn test_string_construction_02() {
+    fn string_construction_02() {
         let result = string_construction("abab");
         assert_eq!(result, 2);
     }

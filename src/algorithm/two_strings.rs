@@ -39,13 +39,13 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_two_strings_01() {
+    fn two_strings_01() {
         let result = two_strings("hello", "world");
         assert_eq!(result, "YES");
     }
 
     #[test]
-    fn test_two_strings_02() {
+    fn two_strings_02() {
         let result = two_strings("hi", "world");
         assert_eq!(result, "NO");
     }

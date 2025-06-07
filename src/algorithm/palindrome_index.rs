@@ -82,104 +82,104 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_palindrome_aaab() {
+    fn panindrome_index_01() {
         let result = palindrome_index("aaab");
         assert_eq!(result, 3);
     }
 
     #[test]
-    fn test_palindrome_abc0cba9() {
+    fn panindrome_index_02() {
         let result = palindrome_index("abc0cba9");
         assert_eq!(result, 7);
     }
 
     #[test]
-    fn test_already_palindrome() {
+    fn panindrome_index_03() {
         let result = palindrome_index("aba");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_even_length_palindrome() {
+    fn panindrome_index_04() {
         let result = palindrome_index("abba");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_single_char() {
+    fn panindrome_index_05() {
         let result = palindrome_index("a");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_two_chars_palindrome() {
+    fn panindrome_index_06() {
         let result = palindrome_index("aa");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_remove_from_middle() {
+    fn panindrome_index_07() {
         let result = palindrome_index("abcba");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_remove_first_char() {
+    fn panindrome_index_08() {
         let result = palindrome_index("baa");
         // Remove first char 'b' to get "aa" which is a palindrome
         assert_eq!(result, 0);
     }
 
     #[test]
-    fn test_remove_last_char() {
+    fn panindrome_index_09() {
         let result = palindrome_index("abab");
         // Multiple valid answers: removing index 0 or 3 both create palindromes
         assert!(result == 0 || result == 3);
     }
 
     #[test]
-    fn test_multiple_valid_answers() {
+    fn panindrome_index_10() {
         let result = palindrome_index("raceacar");
         // Can remove either 'e' at index 3 or 'a' at index 4 to make palindrome
         assert!(result == 3 || result == 4);
     }
 
     #[test]
-    fn test_empty_string() {
+    fn panindrome_index_11() {
         let result = palindrome_index("");
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_two_chars_different() {
+    fn panindrome_index_12() {
         let result = palindrome_index("ab");
         // Either removing 'a' or 'b' creates palindrome
         assert!(result == 0 || result == 1);
     }
 
     #[test]
-    fn test_impossible_case() {
+    fn panindrome_index_13() {
         let result = palindrome_index("abc");
         // Cannot make palindrome by removing single char
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_complex_mismatch() {
+    fn panindrome_index_14() {
         let result = palindrome_index("abcdef");
         // Multiple mismatches, impossible
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_very_long_string() {
+    fn panindrome_index_15() {
         let s = "a".repeat(10000) + "b" + &"a".repeat(10000);
         let result = palindrome_index(&s);
         assert_eq!(result, -1);
     }
 
     #[test]
-    fn test_palindrome_01() {
+    fn panindrome_index_16() {
         let result = palindrome_index("hgygsvlfcwnswtuhmyaljkqlqjjqlqkjlaymhutwsnwcwflvsgygh");
         assert_eq!(result, 44);
     }

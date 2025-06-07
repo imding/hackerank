@@ -89,7 +89,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_basic_no_obstacles() {
+    fn basic_no_obstacles() {
         let result = queens_attack(
             100,
             100,

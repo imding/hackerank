@@ -45,7 +45,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_making_anagrams_01() {
+    fn making_anagrams_01() {
         let result = making_anagrams("cde", "abc");
         assert_eq!(result, 4);
     }

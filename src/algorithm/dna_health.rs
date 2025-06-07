@@ -345,7 +345,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_dna_health() {
+    fn dna_health_01() {
         let result = dna_health(
             vec![
                 "ogwwsenipa".to_string(),
@@ -571,7 +571,7 @@ mod tests {
     }
 
     #[test]
-    fn test_dna_health_simple() {
+    fn dna_health_02() {
         let result = dna_health(
             vec!["a".to_string(), "aa".to_string(), "aaa".to_string()],
             vec![1, 2, 3],
@@ -583,7 +583,7 @@ mod tests {
     }
 
     #[test]
-    fn test_dna_health_no_matches() {
+    fn dna_health_03() {
         let result = dna_health(
             vec!["abc".to_string(), "def".to_string()],
             vec![10, 20],
@@ -593,7 +593,7 @@ mod tests {
     }
 
     #[test]
-    fn test_dna_health_range_filter() {
+    fn dna_health_04() {
         let result = dna_health(
             vec!["a".to_string(), "b".to_string(), "c".to_string()],
             vec![1, 2, 3],
@@ -606,7 +606,7 @@ mod tests {
     }
 
     #[test]
-    fn test_performance_comparison() {
+    fn dna_health_05() {
         use std::time::Instant;
 
         // Create a larger test case with many genes and longer DNA strands
@@ -664,7 +664,7 @@ mod tests {
     }
 
     #[test]
-    fn test_overlapping_patterns_bug_fix() {
+    fn dna_health_06() {
         // This test would fail with the original buggy implementation
         // but should pass with the fixed failure link construction
         let result = dna_health(
@@ -684,7 +684,7 @@ mod tests {
     }
 
     #[test]
-    fn test_dna_health_from_file() {
+    fn dna_health_07() {
         // Test with the input file that demonstrates the bug
         let result = parse_and_run_dna_health("src/algorithm/dna_health_01.txt");
         match result {
@@ -700,7 +700,7 @@ mod tests {
     }
 
     #[test]
-    fn test_correctness_comparison() {
+    fn dna_health_08() {
         // Test with the original large test case to ensure both implementations produce same result
         let genes = vec![
             "a".to_string(),

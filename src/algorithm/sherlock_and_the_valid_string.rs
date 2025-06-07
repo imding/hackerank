@@ -61,31 +61,31 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_valid_string_01() {
+    fn valid_string_01() {
         let result = valid_string("aabbcd");
         assert_eq!(result, "NO");
     }
 
     #[test]
-    fn test_valid_string_02() {
+    fn valid_string_02() {
         let result = valid_string("aabbccddeefghi");
         assert_eq!(result, "NO");
     }
 
     #[test]
-    fn test_valid_string_03() {
+    fn valid_string_03() {
         let result = valid_string("abcdefghhgfedecba");
         assert_eq!(result, "YES");
     }
 
     #[test]
-    fn test_valid_string_04() {
+    fn valid_string_04() {
         let result = valid_string("aaaabbcc");
         assert_eq!(result, "NO");
     }
 
     #[test]
-    fn test_valid_string_05() {
+    fn valid_string_05() {
         let result = valid_string(
             "ibfdgaeadiaefgbhbdghhhbgdfgeiccbiehhfcggchgghadhdhagfbahhddgghbdehidbibaeaagaeeigffcebfbaieggabcfbiiedcabfihchdfabifahcbhagccbdfifhghcadfiadeeaheeddddiecaicbgigccageicehfdhdgafaddhffadigfhhcaedcedecafeacbdacgfgfeeibgaiffdehigebhhehiaahfidibccdcdagifgaihacihadecgifihbebffebdfbchbgigeccahgihbcbcaggebaaafgfedbfgagfediddghdgbgehhhifhgcedechahidcbchebheihaadbbbiaiccededchdagfhccfdefigfibifabeiaccghcegfbcghaefifbachebaacbhbfgfddeceababbacgffbagidebeadfihaefefegbghgddbbgddeehgfbhafbccidebgehifafgbghafacgfdccgifdcbbbidfifhdaibgigebigaedeaaiadegfefbhacgddhchgcbgcaeaieiegiffchbgbebgbehbbfcebciiagacaiechdigbgbghefcahgbhfibhedaeeiffebdiabcifgccdefabccdghehfibfiifdaicfedagahhdcbhbicdgibgcedieihcichadgchgbdcdagaihebbabhibcihicadgadfcihdheefbhffiageddhgahaidfdhhdbgciiaciegchiiebfbcbhaeagccfhbfhaddagnfieihghfbaggiffbbfbecgaiiidccdceadbbdfgigibgcgchafccdchgifdeieicbaididhfcfdedbhaadedfageigfdehgcdaecaebebebfcieaecfagfdieaefdiedbcadchabhebgehiidfcgahcdhcdhgchhiiheffiifeegcfdgbdeffhgeghdfhbfbifgidcafbfcd",
         );

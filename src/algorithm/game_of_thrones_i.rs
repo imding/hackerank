@@ -44,19 +44,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_game_of_thrones_01() {
+    fn game_of_thrones_01() {
         let result = game_of_thrones("aaabbbb");
         assert_eq!(result, "YES")
     }
 
     #[test]
-    fn test_game_of_thrones_02() {
+    fn game_of_thrones_02() {
         let result = game_of_thrones("cdefghmnopqrstuvw");
         assert_eq!(result, "NO")
     }
 
     #[test]
-    fn test_game_of_thrones_03() {
+    fn game_of_thrones_03() {
         let result = game_of_thrones("cdcdcdcdeeeef");
         assert_eq!(result, "YES")
     }
